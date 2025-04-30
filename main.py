@@ -3,7 +3,24 @@ import os
 from pathlib import Path
 import time
 
-from parse_markdown import parse_markdown_to_quizzes
+from generate_content import QuizRationaleGenerator
+from parse_markdown import parse_markdown_to_quizzes, write_answer_key_markdown_from_quizzes
+from quizzes import Question
+
+
+def generate_and_set_consolidated_rationales(question: Question):
+	"""
+	Update Question instance with consolidate rationale generated
+	by generative AI service.
+	"""
+	rationale_generator = QuizRationaleGenerator()
+
+	question_content = f"{question.question_stem_str}\n{question.generate_options_str()}"
+	old_rationale_str = question.generate_rationales_str()
+	new_rationale_str = rationale_generator.generate_rationale(question_content, existing_rationales=(old_rationale_str if old_rationale_str != '' else None))
+	new_rationale_str = new_rationale_str.replace('\n\n','\n')
+	question.generated_consolidated_rationale_str = new_rationale_str
+	time.sleep(1) # Pause 1 second between API calls
 
 
 def main():
@@ -42,15 +59,20 @@ def main():
 
 	quizzes = parse_markdown_to_quizzes(input_markdown_str)
 
+	for i, quiz in enumerate(quizzes):
+		for j, question in enumerate(quiz.questions):
+			print(f"Generating consolidated rationale for question {j+1} of {len(quiz.questions)} in quiz {i+1} of {len(quizzes)}...")
+			generate_and_set_consolidated_rationales(question)
 
+	output_markdown_str = write_answer_key_markdown_from_quizzes(quizzes)
 
 	output_filepath = Path(output_dir, f"{markdown_filepath.stem}_{int(time.time())}.md") 
 
-	# with open(output_filepath, 'w') as f:
-	# 	f.write(output_markdown_str)
+	with open(output_filepath, 'w') as f:
+		f.write(output_markdown_str)
 
-	# print("Script completed.")
-	# print(f"Markdown saved to {output_filepath}")
+	print("Script completed.")
+	print(f"Markdown saved to {output_filepath}")
 
 
 if __name__ == '__main__':
