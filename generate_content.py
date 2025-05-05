@@ -18,7 +18,7 @@ class QuizRationaleGenerator:
         """
         Build the full system/user prompt for a question block
         """
-        user_content = f"""Given the following multiple-choice question and answer options, please generate a single, consolidated rationale that succinctly explains why the correct option is correct and the incorrect options are incorrect. The rationale should ideally have no more than one sentence per answer option, but it may have fewer. If you refer to answer options specifically in the rationale, you can do so by referring to the option letter in parentheses (e.g. "ETL (option B) is not...") after mentioning the concept it represents. Where letters are concerned, the first option is A, the second is B, etc. You do not necessarily need to specifically state which options are correct or incorrect, as the reader will see this information elsewhere. Do not use hyphens to precede or separate the rationale elements. The rationale should be a single paragraph.
+        user_content = f"""Given the following multiple-choice question and answer options, please generate a single rationale paragraph that succinctly explains why the correct option(s) is correct and the incorrect options are incorrect. The rationale should ideally have no more than one sentence per answer option, but fewer sentences is encouraged, if you can consolidate without losing important information. Lead with describing the correct option(s), before describing the incorrect options. If you refer to answer options specifically in the rationale, you can do so by referring to the option letter in parentheses (e.g. "ETL (option B) is not...") after mentioning the concept it represents. Where letters are concerned, the first option is A, the second is B, etc. You do not necessarily need to specifically state which options are correct or incorrect, as the reader will see this information elsewhere. Do not use hyphens to precede or separate the rationale elements. The rationale should be a single paragraph.
 
 Here is the question:
 
@@ -27,7 +27,7 @@ Here is the question:
         if existing_rationales:
             user_content += "\n Existing Rationales (each corresponds to a question option):\n"
             user_content += f"{existing_rationales}\n"
-            user_content += "\nYou should adapt these in the consolidated rationale you provide."
+            user_content += "\nYou should adapt this information in the rationale you provide."
         return [
             {"role": "system", "content": "You are an expert educational content writer. You write clear rationales for quiz questions."},
             {"role": "user", "content": user_content}
