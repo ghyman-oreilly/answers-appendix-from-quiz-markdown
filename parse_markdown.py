@@ -215,10 +215,12 @@ def write_answer_key_markdown_from_quizzes(quizzes: Quizzes) -> str:
     """
     markdown_lines = []
 
+    markdown_lines.append(f"# Answer Key")
+    markdown_lines.append("")  # Blank line for spacing
+
     for quiz in quizzes:
         # Write Quiz Title
-        markdown_lines.append("# Title")
-        markdown_lines.append(quiz.title)
+        markdown_lines.append(f"## {quiz.title}")
         markdown_lines.append("")  # Blank line for spacing
 
         for i, question in enumerate(quiz.questions):
